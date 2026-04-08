@@ -21,6 +21,7 @@ import element_b783dc65_d528_4f74_8c14_e27c934c39b1 from '@/components/elements/
 import element_bf59c8e7_14c9_4c03_a739_8bd7d14031a4 from '@/components/elements/element-bf59c8e7-14c9-4c03-a739-8bd7d14031a4/src/wwElement.vue';
 import element_d7904e9d_fc9a_4d80_9e32_728e097879ad from '@/components/elements/element-d7904e9d-fc9a-4d80-9e32-728e097879ad/src/wwElement.vue';
 import element_deb10a01_5eef_4aa1_9017_1b51c2ad6fd0 from '@/components/elements/element-deb10a01-5eef-4aa1-9017-1b51c2ad6fd0/src/wwElement.vue';
+import element_e1e0ffa9_23af_471f_ac5a_6b49f508c653 from '@/components/elements/element-e1e0ffa9-23af-471f-ac5a-6b49f508c653/src/wwElement.vue';
 import element_e5e2f367_38d3_41fc_a938_7d221dd4691b from '@/components/elements/element-e5e2f367-38d3-41fc-a938-7d221dd4691b/src/wwElement.vue';
 
 // eslint-disable-next-line no-undef
@@ -43,6 +44,7 @@ app.component('wwobject-b783dc65-d528-4f74-8c14-e27c934c39b1', element_b783dc65_
 app.component('wwobject-bf59c8e7-14c9-4c03-a739-8bd7d14031a4', element_bf59c8e7_14c9_4c03_a739_8bd7d14031a4);
 app.component('wwobject-d7904e9d-fc9a-4d80-9e32-728e097879ad', element_d7904e9d_fc9a_4d80_9e32_728e097879ad);
 app.component('wwobject-deb10a01-5eef-4aa1-9017-1b51c2ad6fd0', element_deb10a01_5eef_4aa1_9017_1b51c2ad6fd0);
+app.component('wwobject-e1e0ffa9-23af-471f-ac5a-6b49f508c653', element_e1e0ffa9_23af_471f_ac5a_6b49f508c653);
 app.component('wwobject-e5e2f367-38d3-41fc-a938-7d221dd4691b', element_e5e2f367_38d3_41fc_a938_7d221dd4691b);
 
 // eslint-disable-next-line no-undef
