@@ -11,6 +11,10 @@ import plugin_9c40819b_4a8f_468f_9ba5_4b9699f3361f from '@/components/plugins/pl
 /* wwFront:end */
 
 import { computed, reactive } from 'vue';
+import { useBackTableViewsStore } from '@/pinia/backTableViews.js';
+import { useBackAuthStore } from '@/pinia/backAuth.js';
+import { useEnvVariablesStore } from '@/pinia/envVariables.js';
+import { resolveEnvironmentFromEnvVariables } from '@/helpers/frontEnv.js';
 
 export default {
     ...services,
@@ -43,7 +47,6 @@ export default {
         this.wwLog.init();
 
  
-        wwLib.logStore.verbose('Starting the application...');
         await this.wwWebsiteData.init();
         this.wwLang.init(router);
 
@@ -58,6 +61,7 @@ wwLib.wwPluginHelper.registerPlugin('plugin-9c40819b-4a8f-468f-9ba5-4b9699f3361f
  
         services.scrollStore.start();
         services.keyboardEventStore.start();
+        services.pwaStore.start();
     },
      // TODO: Verify with Alexis, still uses wwImageMultiLang
     getResponsiveStyleProp({ store, style, uid, states = [], prop }) {
@@ -95,6 +99,27 @@ wwLib.wwPluginHelper.registerPlugin('plugin-9c40819b-4a8f-468f-9ba5-4b9699f3361f
         return value;
     },
     globalContext: reactive({
+        auth: computed(() => {
+            const backAuthStore = useBackAuthStore(wwLib.$pinia);
+            return {
+                user: backAuthStore.user,
+                session: backAuthStore.session,
+                isAuthenticated: backAuthStore.isAuthenticated,
+            };
+        }),
+        env: computed(() => {
+            const envVariablesStore = useEnvVariablesStore(wwLib.$pinia);
+            let env = wwLib.getEnvironment();
+            if (env === 'preview') env = 'production';
+            return Object.values(envVariablesStore.values).reduce((acc, envVariable) => {
+                acc[envVariable.name] = envVariable[`${env}Value`];
+                return acc;
+            }, {});
+        }),
+        tableViews: computed(() => {
+            const backTableViewsStore = useBackTableViewsStore(wwLib.$pinia);
+            return backTableViewsStore?.data;
+        }),
         page: computed(() => {
             const page = wwLib.$store.getters['websiteData/getPage'];
             if (!page) return {};
@@ -150,6 +175,7 @@ wwLib.wwPluginHelper.registerPlugin('plugin-9c40819b-4a8f-468f-9ba5-4b9699f3361f
                 theme: wwLib.$store.getters['front/getTheme'],
             };
         }),
+        pwa: services.pwaStore.pwa,
         screen: services.scrollStore.screen,
         componentPositionInfo: services.scrollStore.componentPositionInfo,
     }),
@@ -165,16 +191,10 @@ wwLib.wwPluginHelper.registerPlugin('plugin-9c40819b-4a8f-468f-9ba5-4b9699f3361f
     }),
 
     getEnvironment() {
-        return wwLib.manager
-            ? 'editor'
-            : window.location.host.includes(
-                  // TODO: add staging2 ?
-                  '-staging.' + (process.env.WW_ENV === 'staging' ? import.meta.env.VITE_APP_PREVIEW_URL : '')
-              )
-            ? 'staging'
-            : window.location.host.includes(import.meta.env.VITE_APP_PREVIEW_URL)
-            ? 'preview'
-            : 'production';
+        if (wwLib.manager) return 'editor';
+
+        const envVariablesStore = useEnvVariablesStore(wwLib.$pinia);
+        return resolveEnvironmentFromEnvVariables(envVariablesStore.values);
     },
 
     useBaseTag() {

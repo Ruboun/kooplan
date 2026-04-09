@@ -1,5 +1,7 @@
 import { isEqual } from 'lodash';
 import { escape } from 'html-escaper';
+import { useBackAuthStore } from '@/pinia/backAuth.js';
+import { dateFormulas, DATE_FORMULAS_CATEGORY } from './dateFormulas';
 
 function isObject(obj) {
     return !obj || Array.isArray(obj) || typeof obj !== 'object' ? false : true;
@@ -349,15 +351,16 @@ export const _wwFormulas = {
             return result;
         }, {});
     },
+    ...dateFormulas,
     now() {
-        wwLib.wwLog.error('now is deprecated. Please use date from the date plugin instead');
+        wwLib.wwLog.error('now is deprecated. Please use date instead');
         const tzoffset = new Date().getTimezoneOffset() * 60000;
         const localISOTime = new Date(Date.now() - tzoffset).toISOString();
 
         return localISOTime;
     },
     timestamp() {
-        wwLib.wwLog.error('timestamp is deprecated. Please use toTimestamp from the date plugin instead');
+        wwLib.wwLog.error('timestamp is deprecated. Please use toTimestamp instead');
         const tzoffset = new Date().getTimezoneOffset() * 60000;
         const localISOTime = new Date(Date.now() - tzoffset);
 
@@ -447,6 +450,14 @@ export const _wwFormulas = {
         if (!email || typeof email !== 'string') return false;
         return EMAIL_REGEX.test(email);
     },
+    matchAnyRoles(...args) {
+        const backAuthStore = useBackAuthStore(wwLib.$pinia);
+        return backAuthStore.matchAnyRoles(args);
+    },
+    matchAllRoles(...args) {
+        const backAuthStore = useBackAuthStore(wwLib.$pinia);
+        return backAuthStore.matchAllRoles(args);
+    },
 };
 
 export const WW_FORMULAS_CATEGORIES = [
@@ -535,13 +546,7 @@ export const WW_FORMULAS_CATEGORIES = [
             { name: 'objectToArray', arrity: 1 },
         ],
     },
-    {
-        label: 'Date',
-        values: [
-            { name: 'now', arrity: 0, deprecated: true },
-            { name: 'timestamp', arrity: 0, deprecated: true },
-        ],
-    },
+    DATE_FORMULAS_CATEGORY,
     {
         label: 'File',
         values: [{ name: 'fileToUrl', arrity: 1 }],
@@ -549,5 +554,12 @@ export const WW_FORMULAS_CATEGORIES = [
     {
         label: 'Utils',
         values: [{ name: 'toBool', arrity: 1 }],
+    },
+    {
+        label: 'Auth',
+        values: [
+            { name: 'matchAnyRoles', arrity: 1 },
+            { name: 'matchAllRoles', arrity: 1 },
+        ],
     },
 ];
